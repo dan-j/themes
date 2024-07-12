@@ -45,45 +45,51 @@ const TextFieldRoot = React.forwardRef<TextFieldRootElement, TextFieldRootProps>
       textFieldRootPropDefs,
       marginPropDefs
     );
+    
+    const childrenArray = Children.toArray(children);
+
     return (
-      <div
-        data-accent-color={color}
-        data-radius={radius}
-        style={style}
-        className={classNames('rt-TextFieldRoot', className)}
-        onPointerDown={(event) => {
-          const target = event.target as HTMLElement;
-          if (target.closest('input, button, a')) return;
+        <div
+            data-accent-color={color}
+            data-radius={radius}
+            style={style}
+            className={classNames('rt-TextFieldRoot', className)}
+            onPointerDown={(event) => {
+                const target = event.target as HTMLElement;
+                if (target.closest('input, button, a')) return;
 
-          const input = inputRef.current;
-          if (!input) return;
+                const input = inputRef.current;
+                if (!input) return;
 
-          // Same selector as in the CSS to find the right slot
-          const isRightSlot = target.closest(`
+                // Same selector as in the CSS to find the right slot
+                const isRightSlot = target.closest(`
             .rt-TextFieldSlot[data-side='right'],
             .rt-TextFieldSlot:not([data-side='right']) ~ .rt-TextFieldSlot:not([data-side='left'])
           `);
 
-          const cursorPosition = isRightSlot ? input.value.length : 0;
+                const cursorPosition = isRightSlot ? input.value.length : 0;
 
-          requestAnimationFrame(() => {
-            // Only some input types support this, browsers will throw an error if not supported
-            // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange#:~:text=Note%20that%20according,not%20support%20selection%22.
-            try {
-              input.setSelectionRange(cursorPosition, cursorPosition);
-            } catch (e) {}
-            input.focus();
-          });
-        }}
-      >
-        <input
-          spellCheck="false"
-          {...inputProps}
-          ref={composeRefs(inputRef, forwardedRef)}
-          className="rt-reset rt-TextFieldInput"
-        />
-        {children}
-      </div>
+                requestAnimationFrame(() => {
+                    // Only some input types support this, browsers will throw an error if not supported
+                    // eslint-disable-next-line max-len
+                    // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange#:~:text=Note%20that%20according,not%20support%20selection%22.
+                    try {
+                        input.setSelectionRange(cursorPosition, cursorPosition);
+                        // eslint-disable-next-line no-empty
+                    } catch (e) {}
+                    input.focus();
+                });
+            }}
+        >
+            {childrenArray[0]}
+            <input
+                spellCheck="false"
+                {...inputProps}
+                ref={composeRefs(inputRef, forwardedRef)}
+                className="rt-reset rt-TextFieldInput"
+            />
+            {childrenArray.slice(1)}
+        </div>
     );
   }
 );
